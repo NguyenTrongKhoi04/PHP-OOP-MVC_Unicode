@@ -1,4 +1,7 @@
 <?php
+/**
+ * TODO: INFO Cấu hình Route
+ */
 $routes['default_controller'] = 'home';
 
 /**

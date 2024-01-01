@@ -34,6 +34,7 @@ class App
         $url = $this->__route->Route_handlerUrl($url);
 
         $arrayUrl = array_values(array_filter(explode('/', $url)));
+        // var_dump(explode('/', $url));
 
         $arrCheck = '';
         if (isset($arrayUrl)) {
@@ -47,6 +48,7 @@ class App
                 unset($arrayUrl[$key - 1]);
                 if (file_exists("app/controllers/" . $fileCheck . ".php")) {
                     $arrayUrl = array_values($arrayUrl);
+                    $arrCheck = $fileCheck;
                     break;
                 }
             }
@@ -55,11 +57,19 @@ class App
         if (isset($arrayUrl[0])) {
             $this->__controller = ucfirst($arrayUrl[0]);
             unset($arrayUrl[0]);
-        } else $this->__controller = 'Home';
+        } else $this->__controller = ucfirst( $this->__controller);
+        
+        /**
+         * TODO: Render Page
+         */
+        
+        // khi $arrCheck rỗng thì gán mặc định là home 
+        if(empty($arrCheck)){
+            $arrCheck = $this->__controller;
+        }
 
-        // page
-        if (file_exists("app/controllers/" . $fileCheck . ".php")) {
-            include_once "controllers/" . $fileCheck . ".php";
+        if (file_exists("app/controllers/" . $arrCheck . ".php")) {
+            include_once "controllers/" . $arrCheck . ".php";
 
             if (class_exists($this->__controller)) {
                 $this->__controller = new $this->__controller;

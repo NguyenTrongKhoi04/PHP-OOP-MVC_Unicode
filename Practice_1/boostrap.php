@@ -18,7 +18,7 @@ if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ){
 }else $web_HTTP_Host = 'http://'.$_SERVER['HTTP_HOST'];
 $web_Root_Directory_search = str_replace('\\','/',_THU_MUC_GOC);
 $web_Root = str_replace(strtolower($_SERVER['DOCUMENT_ROOT']),'',strtolower($web_Root_Directory_search));
-// ! đường dẫn trên server thường thì không phân biệt hoa thường (1 số vẫn phân biệt)
+// ! đường dẫn trên server thường thì không phân biệt hoa thường (1 số ít server vẫn phân biệt)
 
 define('_WEB_ROOT',$web_HTTP_Host.$web_Root);
 
@@ -29,10 +29,35 @@ function pre($arr){
     echo '</pre>';
 }
 
+
+/**
+ * TODO: include tất cả các file trong folder configs
+ * * xử lý những phần thừa trong mảng khi use scandir
+ */
+$arr_directory = scandir('configs');
+    foreach($arr_directory as $item){
+        if($item != '..' && $item != '.' && file_exists('configs/'.$item)){
+            include_once 'configs/'.$item ;   
+        }
+    }
+
+/**
+ * TODO: Kiểm tra và inclune file Core/Connection.php 
+ */
+if(isset($config['database'])){
+    $db_config = array_filter($config['database']);
+
+    if(!empty($db_config)){
+        include_once 'core/Connection.php'; // file chứa thông tin về db 
+        include_once 'core/Database.php'; // file để khởi tạo kết nối với Class Connection
+    }
+}
+include_once 'core/Model.php';
 include_once 'core/Route.php';
-include_once 'configs/Routes.php';
 include_once 'app/App.php';
 include_once 'core/Controller.php';
+
+// pre(get_included_files());
 
 // echo $_SERVER['DOCUMENT_ROOT'];
 // echo '<br>';
@@ -42,45 +67,3 @@ include_once 'core/Controller.php';
 // echo '<br>';
 // echo '<br>';
 
-// $urlArr = [
-//     'nguyen',
-//     'trong',
-//     'khoi',
-//     'index'
-// ];
-// $urlCheck = '';
-// foreach ($urlArr as $key => $item) {
-//     $urlCheck .= $item . '/';
-//     $fileCheck = rtrim($urlCheck, '/');
-//     $fileArr = explode('/', $fileCheck);
-//     $fileCheck = implode('/', $fileArr);
-//     var_dump($fileCheck);
-//     echo '<br>';
-//     echo $key;
-//     echo $urlArr[$key - 1];
-//     echo '<br>';
-//     unset($urlArr[$key - 1]);
-//     echo '<pre>';
-//     print_r($urlArr);
-//     echo '</pre>';
-//     var_dump('/app/' . $fileCheck . '.php');
-//     echo '<br>';
-//     if (file_exists('app/' . $fileCheck . ".php")) {
-//         echo '<pre>';
-//         print_r($urlArr);
-//         echo '</pre>';
-//         break;
-//     }
-//     echo '<br>';
-//     echo '<br>';
-// }
-// echo '<pre>';
-// print_r($urlArr);
-// echo '</pre>';
-
-// echo '<br>';
-// echo '<br>';
-// $face_link = str_replace('/','\\',$_SERVER['DOCUMENT_ROOT']);
-
-// $link = str_replace($face_link,'',_THU_MUC_GOC);
-// echo $link;
