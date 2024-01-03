@@ -1,14 +1,17 @@
 <?php
 /**
+ * * tạo đối tượng để kết nối với db
  * * chứa các câu lệnh cơ bản query, fetch, fetchAll
  */
 class Database{
-    private $__conn;
+    public $__conn;
+
+    use QueryBuilder;// sử dụng những truy vấn phức tạp được dựng sẵn 
 
     function __construct(){
+        // TODO: khời tạo đối tượng connect để truy vấn với db
         global $db_config;
-        $this->__conn = Connection::getInstance($db_config);
-          
+        $this->__conn = Connection::getInstance($db_config);    
     }
 
     function insert($table,$data){
@@ -75,10 +78,20 @@ class Database{
     }
 
     function query($sql){
-
-        $statement = $this->__conn->prepare($sql);
-        $statement->execute();
-        return $statement;
+        try{    
+            if(empty($this->__conn)){
+                die('chưa tạo được đối tượng kết nối với db');
+            }
+            $statement = $this->__conn->prepare($sql);
+            $statement->execute();
+            return $statement;
+        }catch(Exception $exception){
+            $mess = $exception->getMessage();
+            $data['mess'] = $mess;
+            $data['sql'] = $sql;
+            App::$app->loadError('Query',$data);
+            die;
+        }
     }
 
     function lastInsertId(){

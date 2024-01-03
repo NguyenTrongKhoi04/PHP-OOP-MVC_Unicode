@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * ? Call_user_func ví dụ
+ */
 class ExampleController {
     public function someAction($paramArray) {
         // $paramArray là một mảng

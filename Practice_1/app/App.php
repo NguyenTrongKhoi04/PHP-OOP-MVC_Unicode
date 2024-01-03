@@ -3,9 +3,13 @@ class App
 {
     private $__controller, $__action, $__param, $__route;
 
+    public static $app;// * Là obj App để gọi được hàm loadError ở class khác
+    
     function __construct()
     {
         global $routes;
+
+        self::$app = $this;
 
         $this->__route = new Route;
 
@@ -85,14 +89,17 @@ class App
         //param
         $this->__param = array_values($arrayUrl);
 
+
         if (method_exists($this->__controller, $this->__action)) {
             call_user_func_array([$this->__controller, $this->__action], $this->__param);
             // ! mới chỉ truyền được 1 param 
         }
     }
 
-    public function loadError()
+    public function loadError($file='404',$data =[])
     {
-        include_once 'errors/404.php';
+        extract($data);
+        include_once 'errors/'.$file.'.php';
     }
 }
+

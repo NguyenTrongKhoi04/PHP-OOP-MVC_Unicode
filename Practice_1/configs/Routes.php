@@ -26,3 +26,11 @@ $routes['trang-chu'] = 'home';
  */
 $routes['san-pham/.+\-(\d+).html'] = 'product/getOneSanPham/$1';//ví dụ: san-pham/chi-tiet-1.html
 $routes['test-dashboard'] = 'dashboard';
+
+// csllback 
+// home/index/param
+
+// class home controller
+// method index($arr[]){
+        
+// }

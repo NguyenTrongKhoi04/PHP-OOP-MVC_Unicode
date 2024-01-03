@@ -1,5 +1,6 @@
 <?php
-class ProductModel{
+// ! Thiếu extend
+class ProductModel {
 
     function getOneProduct($id){
         $a = [

@@ -41,6 +41,8 @@ $arr_directory = scandir('configs');
         }
     }
 
+    include_once 'app/App.php';
+    include_once 'core/Route.php';
 /**
  * TODO: Kiểm tra và inclune file Core/Connection.php 
  */
@@ -49,12 +51,12 @@ if(isset($config['database'])){
 
     if(!empty($db_config)){
         include_once 'core/Connection.php'; // file chứa thông tin về db 
+        include_once 'query_builder.php';
         include_once 'core/Database.php'; // file để khởi tạo kết nối với Class Connection
     }
 }
 include_once 'core/Model.php';
-include_once 'core/Route.php';
-include_once 'app/App.php';
+
 include_once 'core/Controller.php';
 
 // pre(get_included_files());

@@ -1,6 +1,12 @@
 <?php
 class Connection{
+    // * static = biến tham chiếu, ví dụ lúc đầu bạn gán = 1 rồi sau bạn gán giá trị khác =>> biến được gán static thì sẽ bằng giá trị sau cùng
     private static $instance = null,$conn = null;
+                    /**
+                     * TODO: $instance là biến dùng để khởi tạo kết nối, check xem đã kết nối chưa
+                     *          ! tức là muốn kết nối thì phải gọi nó
+                     * TODO: $conn => obj của database
+                     */
     
     private function __construct($config){
         try{
@@ -23,7 +29,9 @@ class Connection{
             self::$conn= $con_db;
         }catch(Exception $exception){
             $mess = $exception->getMessage();
-            die($mess);
+            $data['mess'] = $mess;
+            App::$app->loadError('Database',$data);
+            die;
         }
     }
 
