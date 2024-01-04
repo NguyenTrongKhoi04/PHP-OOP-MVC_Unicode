@@ -3,7 +3,6 @@ session_start();
 include_once 'boostrap.php';
 $a = new App;
 
-
 // class khoi {
 //     protected $db ;
 

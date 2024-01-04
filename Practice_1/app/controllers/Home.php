@@ -10,7 +10,15 @@ class Home extends Controller{
     // * param 1/2/3
 
     function index(){
-        $this->data['sub_ContentPage']['dataPage'] = $this->model_Home->getHomeModel();
+        $data = [
+            'airline_name' => 'hello'
+        ] ;
+        $this->data['sub_ContentPage']['dataPage'] = $this->db->table('airlines')->get();
+        
+        // TODO: test Last Insert ID
+        // $lastId_Test = $this->model_Home->lastInsertIdUser($data);
+        // echo $lastId_Test;
+
         // TODO: Lấy dự liệu bằng func dựng sẵn =>> $this->data['sub_ContentPage']['dataPage'] = $this->model_Home->get();
 
         $this->info_Render('Trang Home','home/index','style','script');

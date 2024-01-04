@@ -1,7 +1,7 @@
 <?php
 class Controller{
-
-    protected $data=[];
+    public $db; // ? phục vụ cho Global Query Builder
+    protected $data=[]; // ! check có errors k
 
     function model($model){
         if(file_exists(_THU_MUC_GOC.'/app/models/'.$model.'.php')){

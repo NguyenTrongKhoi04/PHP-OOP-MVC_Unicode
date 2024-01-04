@@ -2,6 +2,7 @@
 class App
 {
     private $__controller, $__action, $__param, $__route;
+    private $__db; // tạo ra instance của Global query builder
 
     public static $app;// * Là obj App để gọi được hàm loadError ở class khác
     
@@ -19,6 +20,11 @@ class App
 
         $this->__action     = 'index';
         $this->__param      = [];
+
+        if(class_exists('DB')){
+            $db_Flag = new DB;
+            $this->__db = $db_Flag->db; // ? 'db' là thuộc tính của class DB
+        }
 
         $this->handlerUrl();
     }
@@ -77,6 +83,11 @@ class App
 
             if (class_exists($this->__controller)) {
                 $this->__controller = new $this->__controller;
+                
+                if(!empty($this->__db)){
+                    $this->__controller->db = $this->__db;// TODO: Khời tạo Global Query trong Base Controller  
+                }
+
             } else echo "không tìm thấy class của {$this->__controller} này";
         } else $this->loadError();
 
@@ -92,7 +103,7 @@ class App
 
         if (method_exists($this->__controller, $this->__action)) {
             call_user_func_array([$this->__controller, $this->__action], $this->__param);
-            // ! mới chỉ truyền được 1 param 
+            // ! mới chỉ truyền được 1 param ,cần xử lý truyền được mảng 
         }
     }
 

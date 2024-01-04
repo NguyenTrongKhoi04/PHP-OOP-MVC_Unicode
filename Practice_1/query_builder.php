@@ -11,13 +11,15 @@
  *  TODO: (get) $this->db -> get()
  *  TODO: (first) $this->db -> first()
  *  TODO: (table) $this->db -> table(name)
- *  TODO: (join) $This->db -> join(tableName,condition)
+ *  TODO: (join) $this->db -> join(tableName,condition)
  *  TODO: (limit) $this->db -> limit(offset, number)
  *  TODO: (insert) $this->db -> table(name) -> insert($data)
  *  TODO: (update) $this->db -> table(name) -> where(field,compare,value) -> update($data)
  *  TODO: (delete) $this->db -> table(name) -> where(field,compare,value) -> delete()
  *  TODO: (whereLike) $this->db -> whereLike($field, $value)
  *  TODO: (select) $this->db ->select($field)
+ *  TODO: (order by) $this->db->table()->orderby()
+ *  TODO: (lastId) $this->db-lastId()
  */
 
 trait QueryBuilder{
@@ -33,15 +35,69 @@ trait QueryBuilder{
     public $where = '';
     public $operator = '';
     public $selectField = ' * ';
+    public $limit = '';
+    public $orderBy = '';
+    public $innerJoin = '';
 
     public function table($table){
         $this->tableName = $table;
         return $this;
     }
 
+    public function limit($number,$offset=0){
+        $this->limit .= "LIMIT $offset, $number";
+        return $this;
+    }
+
+    /**
+     *  * ví dụ join 3 bảng với nhau khi có sẵn 1 bảng : join()->join()
+     *  TODO: table('product as p')->join('u','p.cart = u.cart') -> join('bill as b','b.id_user = u.id_user')
+     * */
+    public function join($tableName,$relationship){
+        $this->innerJoin .= "INNER JOIN $tableName ON $relationship ";
+        return $this;
+    }
+
     public function select($field =' * '){
         $this->selectField = $field;        
         return $this;
+    }
+
+    public function orderBy($field,$type = 'ASC'){
+        // ! xử lý trường hợp orderBy('id ASC, name DESC")
+        $arrField = array_filter(explode(",",$field));
+        if(!empty($arrField) && count($arrField)>=2){
+            $this->orderBy .= "ORDER BY ". implode(',',$arrField);
+        }else{
+            $this->orderBy .= "ORDER BY $field $type" ;
+        }
+        return $this;
+    }
+
+    public function insert($data){
+        $tableName = $this->tableName;
+        $insertStatus = $this->insert_InClassDatabase($tableName,$data);
+        return $insertStatus;
+    }
+
+    public function update($data){
+        $tableName = $this->tableName;
+        $whereUpdate = str_replace('WHERE','',$this->where); // ? vì trong hàm update_InClassDatabase có WHERE nên cần bỏ WHERE ở đây đi
+        $whereUpdate = trim($whereUpdate);
+        $updateStatus = $this->update_InClassDatabase($tableName,$data,$whereUpdate);
+        return $updateStatus;
+    }
+    
+    public function delete(){
+        $tableName = $this->tableName;
+        $whereUpdate = str_replace('WHERE','',$this->where); // ? vì trong hàm update_InClassDatabase có WHERE nên cần bỏ WHERE ở đây đi
+        $whereUpdate = trim($whereUpdate);
+        $deleteStatus = $this->delete_InClassDatabase($tableName,$whereUpdate);
+        return $deleteStatus;
+    }
+
+    public function lastId(){
+        return $this->lastInsertId();
     }
 
     public function where($field, $compare, $value){
@@ -75,16 +131,14 @@ trait QueryBuilder{
     }
 
     public function get(){
-        $sqlQuery = " SELECT $this->selectField FROM $this->tableName $this->where ";
-        echo $sqlQuery;
+        $sqlQuery = " SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->orderBy $this->limit  ";
+        $sqlQuery = trim($sqlQuery);
+        
         $query = $this->query($sqlQuery); // Thực hiện truy vấn
             // cách 2: viết obj db ở đây =>> $this->db->query($sqlQuery)
 
         // ? để các câu lệnh truy vấn ko bị đè lên nhau =>> sau khi truy vấn xong sẽ reset lại các thuộc tính (where,tableName,operator,selectField)
-        $tableName = '';
-        $where = '';
-        $operator = '';
-        $selectField = ' * ';
+        $this->reset();
 
         if(!empty($query)){
             return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -93,20 +147,27 @@ trait QueryBuilder{
     }
 
     public function first(){
-        $sqlQuery = " SELECT $this->selectField FROM $this->tableName $this->where ";
-        echo $sqlQuery;
+        $sqlQuery = " SELECT $this->selectField FROM $this->tableName $this->where $this->orderBy $this->limit ";
+        // echo $sqlQuery; // Kiểm tra nếu gặp bug SQL
         $query = $this->query($sqlQuery); // Thực hiện truy vấn
             // cách 2: viết obj db ở đây =>> $this->db->query($sqlQuery)
 
         // ? để các câu lệnh truy vấn ko bị đè lên nhau =>> sau khi truy vấn xong sẽ reset lại các thuộc tính (where,tableName,operator,selectField)
-        $tableName = '';
-        $where = '';
-        $operator = '';
-        $selectField = ' * ';
+        $this->reset();
 
         if(!empty($query)){
             return $query->fetch(PDO::FETCH_ASSOC);
         }
         return false;
+    }
+
+    public function reset(){
+         $tableName = '';
+         $where = '';
+         $operator = '';
+         $selectField = ' * ';
+         $limit = '';
+         $orderBy = '';
+         $innerJoin = '';
     }
 }

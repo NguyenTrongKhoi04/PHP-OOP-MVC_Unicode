@@ -53,6 +53,7 @@ if(isset($config['database'])){
         include_once 'core/Connection.php'; // file chứa thông tin về db 
         include_once 'query_builder.php';
         include_once 'core/Database.php'; // file để khởi tạo kết nối với Class Connection
+        include_once 'core/DB.php'; // file để khởi tạo kết nối với Class Connection
     }
 }
 include_once 'core/Model.php';
