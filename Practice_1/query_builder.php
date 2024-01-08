@@ -61,6 +61,7 @@ trait QueryBuilder{
     public function select($field =' * '){
         $this->selectField = $field;        
         return $this;
+        
     }
 
     public function orderBy($field,$type = 'ASC'){

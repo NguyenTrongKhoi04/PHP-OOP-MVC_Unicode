@@ -18,6 +18,7 @@ class Database{
      * @param: $data ở dưới dạng $key=>$value. Ví dụ $data = ['a'=>1, 'b'=>3] 
      */
     function insert_InClassDatabase($table,$data){
+        
         if(!empty($data)){
             $fieldStr = '';
             $valueStr = '';

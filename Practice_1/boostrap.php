@@ -60,6 +60,9 @@ include_once 'core/Model.php';
 
 include_once 'core/Controller.php';
 
+include_once 'core/Request.php';
+
+include_once 'core/Respone.php';
 // pre(get_included_files());
 
 // echo $_SERVER['DOCUMENT_ROOT'];

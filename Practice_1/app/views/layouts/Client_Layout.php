@@ -16,9 +16,12 @@
     ?> -->
     
     <?php $this->render('blocks/Header'); ?> 
-    <?php if(isset($contentPage)&&isset($sub_ContentPage)){
+    <?php 
+        $sub_ContentPage = $sub_ContentPage ?? [];// ! mặc định dữ liệu = arr rỗng 
 
-    $this->render($contentPage,$sub_ContentPage); 
+        // TODO: view + data được đổ vào trang đó
+        if(isset($contentPage)&&isset($sub_ContentPage)){
+            $this->render($contentPage,$sub_ContentPage); 
     }
     ?> 
     <?php $this->render('blocks/Footer') ?> 
