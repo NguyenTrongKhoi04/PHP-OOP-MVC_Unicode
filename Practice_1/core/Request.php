@@ -87,7 +87,7 @@ class Request{
                     $fieldName_Check = reset($fieldNameRule);
                     if(count($fieldNameRule)>1){
                         $fieldValue = end($fieldNameRule);
-                        return $check_Validate;
+                        $check_Validate;
                     }
 
                     if($fieldName_Check == 'required'){

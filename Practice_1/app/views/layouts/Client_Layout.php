@@ -11,7 +11,7 @@
     <!-- <h2>Dữ liệu toàn bộ trang</h2>
      <?php 
         echo '<pre>';
-        print_r($data);
+        print_r($sub_ContentPage);
         echo '</pre>';
     ?> -->
     
@@ -19,7 +19,7 @@
     <?php 
         $sub_ContentPage = $sub_ContentPage ?? [];// ! mặc định dữ liệu = arr rỗng 
 
-        // TODO: view + data được đổ vào trang đó
+        // TODO: view ($contentPage) + data ($sub_ContentPage) được đổ vào master layout để ra được trang được render
         if(isset($contentPage)&&isset($sub_ContentPage)){
             $this->render($contentPage,$sub_ContentPage); 
     }

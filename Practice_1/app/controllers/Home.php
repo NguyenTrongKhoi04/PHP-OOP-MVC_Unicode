@@ -14,6 +14,7 @@ class Home extends Controller{
         $data = [
             'airline_name' => 'hello'
         ] ;
+        
         $this->data['sub_ContentPage']['dataPage'] = $this->db->table('airlines')->get();
         
         // TODO: test Last Insert ID
@@ -64,6 +65,7 @@ class Home extends Controller{
         
         // test validate
         $request_Obj->validate();
-        var_dump($request_Obj->validate());
+        pre($request_Obj->__errors);
+        $this->info_Render('Form','validate/add');
     }
 }
