@@ -1,7 +1,11 @@
 <?php
 class Request{
-    private $__rules= [],$__mess= [];
-    public $__errors = [];
+    private $__rules= [],$__mess= [],$__errors = [];
+    public $db;
+
+    public function __construct(){
+        $this->db = new Database;
+    }
     /**
      * TODO: kiểm tra phương thức (GET / POST)
      */
@@ -75,7 +79,7 @@ class Request{
             foreach($this->__rules as $arrFieldName => $arrRule){
                 // pre($arrFieldName);
                 $arrFieldNameRule = explode('|',$arrRule);
-                
+
                 foreach($arrFieldNameRule as $fieldName){
                     // pre($arrFieldNameRule);
                     $fieldName_Check = '';
@@ -128,17 +132,75 @@ class Request{
                             $check_Validate= false;
                         }
                     }
+
+                    if($fieldName_Check == 'unique'){
+                        $fieldTableCheck_Unique='';
+                        $fieldNameCheck_Unique='';
+
+                        /**
+                         * lấy bảng để check
+                         */
+                        if(!empty($fieldNameRule[1])){
+                            $fieldTableCheck_Unique = $fieldNameRule[1] ;
+                        }
+
+                        /**
+                         * Lấy cột để check
+                         */
+                        if(!empty($fieldNameRule[2])){
+                            $fieldNameCheck_Unique = $fieldNameRule[2] ;
+                        }
+
+                        /**
+                         * áp dụng khi có 3 điều kiện
+                         *  =>> required|email|min:6|unique:email:email
+                         *                           ? unique:tên bảng:tên cột muốn so
+                         */
+                        if(count($fieldNameRule)==3){   
+                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = '$dataField[$arrFieldName]'")->fetchAll(PDO::FETCH_ASSOC);
+
+                            // có dữ liệu => bị trùng
+                            if(!empty($check_Unique)){
+                                $this->setErrors($arrFieldName,$fieldName_Check);
+                                $check_Validate = false;
+                            }
+                        }
+
+                        if(count($fieldNameRule)==4){
+                            $condition = $fieldNameRule[3];   
+                            $condition = str_replace('=','<>',$condition);
+                            // pre($condition);
+                            
+                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = '$dataField[$arrFieldName]' AND $condition")->fetchAll(PDO::FETCH_ASSOC);
+
+                            if(!empty($check_Unique)){
+                                $this->setErrors($arrFieldName,$fieldName_Check);
+                                $check_Validate = false;
+                            }
+                        }
+                    }
                 }
             }
         }
         return $check_Validate;
     }
 
-    function errors($errorsFieldName){
+    function errors($errorsFieldName=''){
         if(!empty($this->__errors)){
-            // * trả về lỗi đầu tiên có trong mảng __errors của field đớ 
+            if(empty($errorsFieldName)){
+                $dataErrors = [];// arr chứa 1 lỗi lần lượt của 1 field
+                foreach($this->__errors as $error_OneField => $value){
+                    // ! $error_OneField là arr, $value là item của mảng đó
+                    $dataErrors[$error_OneField] = reset($value);
+                }
+                return $dataErrors;
+
+                // * trả về lỗi đầu tiên có trong mảng __errors của field đớ 
+            }
             return reset($this->__errors[$errorsFieldName]);
         }
+        
+        return false;
     }
 
     function setErrors($arrFieldName,$fieldName_Check){

@@ -134,6 +134,7 @@ trait QueryBuilder{
     public function get(){
         $sqlQuery = " SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->orderBy $this->limit  ";
         $sqlQuery = trim($sqlQuery);
+        // echo $sqlQuery;
         
         $query = $this->query($sqlQuery); // Thực hiện truy vấn
             // cách 2: viết obj db ở đây =>> $this->db->query($sqlQuery)

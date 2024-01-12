@@ -90,6 +90,7 @@ class Database{
                 die('chưa tạo được đối tượng kết nối với db');
             }
             $statement = $this->__conn->prepare($sql);
+            
             $statement->execute();
             return $statement;
         }catch(Exception $exception){

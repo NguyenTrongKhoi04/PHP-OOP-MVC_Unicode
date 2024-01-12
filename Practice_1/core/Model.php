@@ -5,7 +5,6 @@
 abstract class Model extends Database{
     protected $db;
     
-    
     function __construct(){
         // TODO: obj đã kết nối được với db và chứa các mehod query, fetch, fetchAll
         $this->db = new Database();
