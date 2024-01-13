@@ -20,6 +20,9 @@ if(!empty($dataPage)){
             <input type="text" name="fullname" placeholder="Họ tên" value="<?= $old_Data_Home['fullname'] ?? ''?>">
                 <label style="color: red;" for=""><?= $errors_Home['fullname'] ?? '' ?></label>
             <br>
+            <input type="text" name="age" placeholder="Tuổi" value="<?= $old_Data_Home['age'] ?? ''?>">
+                <label style="color: red;" for=""><?= $errors_Home['age'] ?? '' ?></label>
+            <br>
             <input type="text" name="email" placeholder="Email" value="<?= $old_Data_Home['email'] ?? '' ?>">
                 <label style="color: red;" for=""><?= $errors_Home['email'] ?? '' ?></label>
             <br>

@@ -107,6 +107,11 @@ class App
         }
     }
 
+    // ? Lây controller hiện tại
+    public function getController(){
+        return $this->__controller;
+    }
+
     public function loadError($file='404',$data =[])
     {
         extract($data);

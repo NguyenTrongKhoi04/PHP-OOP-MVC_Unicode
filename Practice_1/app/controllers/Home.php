@@ -30,6 +30,7 @@ class Home extends Controller{
     }
 
     function formPostUser(){
+        Session::isInvalid();
         $request_Obj = new Request;
         $this->info_Render('Form','validate/add');
     }
@@ -50,6 +51,7 @@ class Home extends Controller{
 
             $request_Obj->rules([
                 'fullname' => 'required|min:3|max:10',
+                'age'=> 'required|callback_checkAge', // callback_funcCallBack
                 // 'email'    => 'required|email|min:6|unique:email:email',
                 'email'    => 'required|email|min:6|unique:email:email:id='.$userId_Test,
                                                     // ? unique:tên bảng:tên cột muốn so:điều kiện thêm
@@ -64,6 +66,8 @@ class Home extends Controller{
                 'email.email'=>"Nhập đúng định dạng email",
                 'email.min'=>"Nhập ít nhất 6 ký tự",
                 'email.unique'=>"Email đã có người sử dụng",
+                'age.required'=>"Tuổi không được để trống",
+                'age.callback_checkAge'=>"Tuổi lớn hơn 30",// ? test nên viết chay ra
                 'password.required'=>"Vui lòng nhập mật khẩu",
                 'password.min'=>"Mật khẩu ít nhất có 3 ký tự",
                 'confirm_password.required'=> "Vui lòng xác nhận mật khẩu",
@@ -71,11 +75,13 @@ class Home extends Controller{
             ]);
             
             // test validate
-            $request_Obj->validate();
+            $check_Validate = $request_Obj->validate();
             
-            $this->errors_Field_Home['errors_Home'] = $request_Obj->errors();
-            $this->errors_Field_Home['msg_errors'] = 'Vui lòng nhập lại';
-            $this->errors_Field_Home['old_Data_Home']= $request_Obj->getFields();
+            if(!$check_Validate){
+                $this->errors_Field_Home['errors_Home'] = $request_Obj->errors();
+                $this->errors_Field_Home['msg_errors'] = 'Vui lòng nhập lại';
+                $this->errors_Field_Home['old_Data_Home']= $request_Obj->getFields();
+            }
             
             $this->data['sub_ContentPage']['dataPage']=$this->errors_Field_Home; 
             $this->info_Render('Form','validate/add');
@@ -84,5 +90,16 @@ class Home extends Controller{
             $url_Obj = new Respone ;
             $url_Obj->redirect('home/formPostUser');
         }
+
+
+    }
+
+    /**
+     * ? Dùng để test những ngoại lên errors không có trong validate dựng sẵn
+     * * hiểu đơn giản là coder muốn ghi thêm validate nào khác mà validate đó ko có trong func dựng sẵn
+     */
+    public function checkAge($age){
+        if($age >= 30) return true;
+        return false;
     }
 }

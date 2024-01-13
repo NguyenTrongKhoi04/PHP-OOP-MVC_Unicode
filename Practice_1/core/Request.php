@@ -72,12 +72,12 @@ class Request{
 
     function validate(){
         $this->__rules = array_filter($this->__rules);
-        $dataField = $this->getFields();
+        $dataField = $this->getFields();// lấy dữ liệu form 
         $check_Validate = true;
 
         if(!empty($this->__rules)){
             foreach($this->__rules as $arrFieldName => $arrRule){
-                // pre($arrFieldName);
+                // pre($arrFieldName); // * kiểm tra những field được lấy từ form
                 $arrFieldNameRule = explode('|',$arrRule);
 
                 foreach($arrFieldNameRule as $fieldName){
@@ -133,6 +133,7 @@ class Request{
                         }
                     }
 
+                    // TODO: Duy nhất, kiểm tra tồn tại trong db hay k
                     if($fieldName_Check == 'unique'){
                         $fieldTableCheck_Unique='';
                         $fieldNameCheck_Unique='';
@@ -157,27 +158,48 @@ class Request{
                          *                           ? unique:tên bảng:tên cột muốn so
                          */
                         if(count($fieldNameRule)==3){   
-                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = '$dataField[$arrFieldName]'")->fetchAll(PDO::FETCH_ASSOC);
+                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = 'trim($dataField[$arrFieldName])'")->fetchAll(PDO::FETCH_ASSOC);
 
-                            // có dữ liệu => bị trùng
-                            if(!empty($check_Unique)){
-                                $this->setErrors($arrFieldName,$fieldName_Check);
-                                $check_Validate = false;
-                            }
-                        }
-
-                        if(count($fieldNameRule)==4){
+                        }elseif(count($fieldNameRule)==4){
+                            /**
+                             * áp dụng với 4 điều kiện
+                             *  =>> 'required|email|min:6|unique:email:email:id='.$userId_Test
+                             */
                             $condition = $fieldNameRule[3];   
-                            $condition = str_replace('=','<>',$condition);
                             // pre($condition);
                             
-                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = '$dataField[$arrFieldName]' AND $condition")->fetchAll(PDO::FETCH_ASSOC);
+                            $condition = str_replace('=','<>',$condition);
+                            $check_Unique = $this->db->query("SELECT $arrFieldName FROM $fieldTableCheck_Unique WHERE $fieldNameCheck_Unique = 'trim($dataField[$arrFieldName])' AND $condition")->fetchAll(PDO::FETCH_ASSOC);
+                        }
+                            // có dữ liệu => bị trùng
+                        if(!empty($check_Unique)){
+                            $this->setErrors($arrFieldName,$fieldName_Check);
+                            $check_Validate = false;
+                        }
+                    }
 
-                            if(!empty($check_Unique)){
-                                $this->setErrors($arrFieldName,$fieldName_Check);
-                                $check_Validate = false;
+                    // TODO: Validate ngoại lệ, call back func_validate_NgoaiLe được coder viết riêng
+                        /**
+                         * ? cho biểu thức được kiểm tra và giá trị sau khi lọc vào [$callBack_Arr]
+                         */
+                    if(preg_match('~^callback_(.+)~is',$fieldName_Check,$callBack_Arr)){
+                        // pre($callBack_Arr);
+
+                        if(!empty($callBack_Arr[1])){
+                            $callBack_Arr = $callBack_Arr[1];// TODO: Gán func được callback vào $
+                            
+                            $controller_Validate_NgoaiLe = APP::$app->getController();// Lấy class hiện tại của trang
+                            if(method_exists($controller_Validate_NgoaiLe,$callBack_Arr)){
+                                $checkCallBack = call_user_func_array([$controller_Validate_NgoaiLe,$callBack_Arr],[trim($dataField[$arrFieldName])]);
+
+                                if(!$checkCallBack){
+                                    // cho vào [errors]
+                                    $this->setErrors($arrFieldName,$fieldName_Check);
+                                    $check_Validate= false;
+                                }
                             }
                         }
+                        
                     }
                 }
             }

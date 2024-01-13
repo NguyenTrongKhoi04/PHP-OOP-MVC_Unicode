@@ -42,6 +42,7 @@ $arr_directory = scandir('configs');
     }
 
     include_once 'app/App.php';
+    include_once 'core/Session.php';
     include_once 'core/Route.php';
 /**
  * TODO: Kiểm tra và inclune file Core/Connection.php 
