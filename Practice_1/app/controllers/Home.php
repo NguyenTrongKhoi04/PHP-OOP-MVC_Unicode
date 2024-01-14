@@ -30,8 +30,23 @@ class Home extends Controller{
     }
 
     function formPostUser(){
-        Session::isInvalid();
+        // TODO: test get,set,flashData Session
+        // Session::isInvalid();
+        // Session::data('khoi','depzai');
+        // pre(Session::data('khoi'));
+
+        // Session::delete('khoi');
+        // pre(Session::data());
+        // pre(Session::flash_Data('khoi'));
+
+        //TODO: Gán vào errors_Field_Home để in errors field ra bên view 
+        $this->errors_Field_Home['errors_Home'] = Session::flash_Data('errors_Home'); 
+        $this->errors_Field_Home['msg_errors'] = Session::flash_Data('msg_errors'); 
+        $this->errors_Field_Home['old_Data_Home'] = Session::flash_Data('old_Data_Home'); 
+        // pre($this->errors_Field_Home);
+
         $request_Obj = new Request;
+        $this->data['sub_ContentPage']['dataPage'] = $this->errors_Field_Home;
         $this->info_Render('Form','validate/add');
     }
     
@@ -47,7 +62,7 @@ class Home extends Controller{
         
         $request_Obj = new Request;//obj lấy dữ liệu form, method, errors
         if($request_Obj->isPost()){
-            $userId_Test = 2;// test validate 
+            $userId_Test = 2;// test validate (lớn/nhở hơn)
 
             $request_Obj->rules([
                 'fullname' => 'required|min:3|max:10',
@@ -78,20 +93,25 @@ class Home extends Controller{
             $check_Validate = $request_Obj->validate();
             
             if(!$check_Validate){
-                $this->errors_Field_Home['errors_Home'] = $request_Obj->errors();
-                $this->errors_Field_Home['msg_errors'] = 'Vui lòng nhập lại';
-                $this->errors_Field_Home['old_Data_Home']= $request_Obj->getFields();
+                //TODO: Set giá trị của Session[session_1] = [....]
+                Session::flash_Data('errors_Home',$request_Obj->errors());
+                Session::flash_Data('msg_errors','Vui lòng nhập lại'); // thông báo chung cho toàn bộ errors field
+                Session::flash_Data('old_Data_Home',$request_Obj->getFields());
+                // pre($_SESSION['session_1']);
+    
+                // ! in ra thông báo error field (chưa dùng SESSION). Dùng cùng với block else ở dưới 
+                // $this->errors_Field_Home['errors_Home'] = $request_Obj->errors();
+                // $this->errors_Field_Home['old_Data_Home'] = 'Vui lòng nhập lại';
+                // $this->errors_Field_Home['old_Data_Home']= $request_Obj->getFields();
             }
-            
-            $this->data['sub_ContentPage']['dataPage']=$this->errors_Field_Home; 
-            $this->info_Render('Form','validate/add');
-        }else{
-            // header về form ban đầu nếu form đó use method GET
-            $url_Obj = new Respone ;
-            $url_Obj->redirect('home/formPostUser');
         }
+        // else{ // TODO: header về form ban đầu nếu form đó use method GET. Khối block này dùng khi không áp dung session
+        //     $url_Obj = new Respone ;
+        //     $url_Obj->redirect('home/formPostUser');
+        // }
 
-
+        $url_Obj = new Respone ;
+        $url_Obj->redirect('home/formPostUser');
     }
 
     /**
