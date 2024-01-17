@@ -1,1 +1,1 @@
-Đây là trang list sản phẩm
+<h2 style="color: blue;">Đây là trang list sản phẩm</h2>

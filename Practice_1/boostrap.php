@@ -1,11 +1,6 @@
 <?php
 define('_THU_MUC_GOC', __DIR__);//C:\xampp\htdocs\PHP_2_OOP\Demo_PHP_OOP_Unicode\Practice_1
 
-/**
- * ==================================================
- *                      USER
- * ==================================================
- */
 define('_CSS_ROOT_CLIENT','/publics/assets/client/css/');
 define('_JS_ROOT_CLIENT','/publics/assets/client/js/');
 
@@ -40,10 +35,6 @@ $arr_directory = scandir('configs');
             include_once 'configs/'.$item ;   
         }
     }
-
-    include_once 'app/App.php';
-    include_once 'core/Session.php';
-    include_once 'core/Route.php';
 /**
  * TODO: Kiểm tra và inclune file Core/Connection.php 
  */
@@ -57,12 +48,16 @@ if(isset($config['database'])){
         include_once 'core/DB.php'; // file để khởi tạo kết nối với Class Connection
     }
 }
+
+include_once 'core/MiddleWare_LoadViewModel.php';
+include_once 'app/App.php';
+
+include_once 'core/MiddleWare.php';
+include_once 'core/Session.php';
+include_once 'core/Route.php';
 include_once 'core/Model.php';
-
 include_once 'core/Controller.php';
-
 include_once 'core/Request.php';
-
 include_once 'core/Respone.php';
 // pre(get_included_files());
 

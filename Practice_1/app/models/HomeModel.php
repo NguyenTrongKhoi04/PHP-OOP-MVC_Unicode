@@ -55,4 +55,8 @@ class HomeModel extends Model{
         $this->db->table('airlines')->insert($data);
         return $this->db->lastId();
     }
+
+    function checkModelMiddleWare(){
+        echo 'Hello MiddleWare';
+    }
 }

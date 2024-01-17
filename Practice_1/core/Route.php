@@ -1,5 +1,7 @@
 <?php
 class Route{
+    private $__keyRoute = null;
+
     function Route_handlerUrl($url){
         global $routes;
         unset($routes['default_controller']);
@@ -10,6 +12,7 @@ class Route{
             foreach($routes as $key=>$value){
                 if(preg_match('~'.$key.'~is',$url)){
                     $handler_Url = preg_replace('~'.$key.'~is',$value,$url);
+                    $this->__keyRoute = $key;
                     /**
                      * @params (điều kiện thay thế, chuỗi thay thế, chuỗi được thay thế)
                      * 
@@ -28,5 +31,14 @@ class Route{
 
         // Nếu URL bình thường, ko sử dụng URL ảo của Route thì vẫn sẽ ra được 
         return $handler_Url;
+    }
+
+    function getUri(){
+        return $this->__keyRoute;
+    }
+
+    static function getFullUrl(){
+        $uri = App::$app->getUrl();
+        return _WEB_ROOT.$uri;
     }
 }

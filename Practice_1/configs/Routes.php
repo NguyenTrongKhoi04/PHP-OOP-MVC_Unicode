@@ -1,6 +1,7 @@
 <?php
 /**
  * TODO: INFO Cấu hình Route
+ * ! Vẫn chưa giải quyết được khi nhập $value của routes thì vẫn chạy được 
  */
 $routes['default_controller'] = 'home';
 

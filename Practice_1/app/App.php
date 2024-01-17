@@ -42,6 +42,10 @@ class App
     {
         $url = $this->getUrl();
         $url = $this->__route->Route_handlerUrl($url);
+        
+        // TODO: xử lý $keyRouter với MiddleWare
+        $this->globalHandleMiddleWare();
+        $this->handleMiddleWare($this->__route->getUri());
 
         $arrayUrl = array_values(array_filter(explode('/', $url)));
         // var_dump(explode('/', $url));
@@ -116,6 +120,44 @@ class App
     {
         extract($data);
         include_once 'errors/'.$file.'.php';
+    }
+
+    public function handleMiddleWare($keyRoute){
+        global $config;
+        $keyRoute = trim($keyRoute);
+
+        // pre($config['MiddleWare']['routeMiddleWare']);
+        if(!empty($config['MiddleWare']['routeMiddleWare'])){
+            $routeMiddleWareArr = $config['MiddleWare']['routeMiddleWare'];
+            foreach($routeMiddleWareArr as $itemMiddleWare => $valueMiddleWare){
+                if($keyRoute == trim($itemMiddleWare) &&file_exists("app/middleware/".$valueMiddleWare.".php")){
+                    include_once "app/middleware/".$valueMiddleWare.".php";
+                    if(class_exists($valueMiddleWare)){
+                        $middleWareObj = new $valueMiddleWare();
+                        $middleWareObj->db = $this->__db; //TODO: kết nối MiddleWare với DB
+                        $middleWareObj -> handle();
+                    }
+                }
+            }
+        }
+    }
+
+    public function globalHandleMiddleWare(){
+        global $config;
+
+        if(!empty($config['MiddleWare']['globalMiddleWare'])){
+            $global_RouteMiddleWareArr = $config['MiddleWare']['globalMiddleWare'];
+            foreach($global_RouteMiddleWareArr as $itemMiddleWare => $valueMiddleWare){
+                if(file_exists("app/middleware/".$valueMiddleWare.".php")){
+                    include_once "app/middleware/".$valueMiddleWare.".php";
+                    if(class_exists($valueMiddleWare)){
+                        $middleWareObj = new $valueMiddleWare();
+                        $middleWareObj->db = $this->__db; //TODO: kết nối MiddleWare với DB
+                        $middleWareObj -> handle();
+                    }
+                }
+            }
+        }
     }
 }
 
