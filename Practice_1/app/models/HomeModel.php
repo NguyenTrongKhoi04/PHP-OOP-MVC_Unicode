@@ -28,9 +28,9 @@ class HomeModel extends Model{
          *      ! không thể $this->db->get() vì obj 'db' ko có method get()
          */
         $data = $this->db
-                ->table('airlines')
                 ->join('user','product.cart = user.cart') 
-                -> join('bill','bill.id_user = user.id_user')
+                ->join('bill','bill.id_user = user.id_user')
+                ->table('airlines')
                 ->limit(4,0)
                 ->orderBy('airline_name ASC , airline_id ASC')
                 ->get();
